@@ -1,0 +1,15 @@
+version: '1.0'
+
+steps:
+  build_image:
+    type: build
+    title: Build invincibleinfra/pg-secure docker image
+    image_name: invincibleinfra/pg-secure
+    tag: ${{CF_REVISION}}
+  push_image_gcr:
+    type: push
+    title: Push docker image to GCR
+    candidate: ${{build_image}}
+    image_name: invincibleinfra/pg-secure
+    tag: ${{CF_REVISION}}
+    registry: gcr
