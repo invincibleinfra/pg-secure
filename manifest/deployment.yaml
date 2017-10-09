@@ -1,0 +1,42 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: pg-secure-deployment
+  labels:
+    app: pg-secure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pg-secure
+  template:
+    metadata:
+      labels:
+        app: pg-secure
+    spec:
+      containers:
+        - name: pg-secure
+          image: invincibleinfra/pg-secure
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: example-password
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: tls-secrets
+              mountPath: /tls
+              readOnly: true
+      volumes:
+        - name: tls-secrets
+          secret:
+            secretName: pg-tls-secret
+            items:
+              - key: key
+                path: key
+                mode: 0600
+              - key: cert
+                path: cert
+              - key: ca
+                path: ca
+      restartPolicy: Always

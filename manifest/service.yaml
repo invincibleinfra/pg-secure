@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: pg-secure-service
+spec:
+  selector:
+    app: pg-secure
+  ports:
+  - name: postgres
+    port: 5432
