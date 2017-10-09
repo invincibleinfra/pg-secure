@@ -28,12 +28,18 @@ ssl_ca_file = '/pg-secure/tls/ca'
 
 # Kubernetes Integration
 
-The file `manifest/deployment.yaml` provides an example of a `pg-secure` Kubernetes deployment. Note the use of Kubernetes secrets to provide the TLS
-configuration information:
+The method by which `pg-secure` integrates with Kubernetes depends
+on the choice of the secure secrets datastore.
+
+
+## Using Kubernetes Secrets
+
+The file `manifest/k8s-secrets/deployment.yaml` provides an example of a `pg-secure` Kubernetes deployment. Note the use of Kubernetes secrets to provide the TLS
+configuration information and database password:
 
 ```
 volumes:
-  - name: tls-secrets
+  - name: pg-tls-secret
     secret:
       secretName: pg-tls-secret
       items:
@@ -44,12 +50,22 @@ volumes:
           path: cert
         - key: ca
           path: ca
+  - name: password
+    secret:
+      secretName: pg-password
+```
+
+You will need to create the required secrets in a similar manner to the following:
+
+```
+kubectl create secret generic pg-password password=example-password
+kubectl create secret generic pg-tls-secret --from-file=ca=<CA chain file> --from-file=cert=<TLS cert file> --from-file=key=<private key file>
 ```
 
 The entire set of Kubernetes API objects required to expose this postgres
 instance to internal clients may be instantiated as follows:
 
 ```
-kubectl apply -f manifest/deployment.yaml
-kubectl apply -f manifest/service.yaml
+kubectl apply -f manifest/k8s-secrets/deployment.yaml
+kubectl apply -f manifest/k8s-secrets/service.yaml
 ```

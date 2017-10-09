@@ -21,14 +21,17 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_PASSWORD
-              value: example-password
+              valueFrom:
+                secretKeyRef:
+                  name: pg-password
+                  key: password
           imagePullPolicy: Always
           volumeMounts:
-            - name: tls-secrets
+            - name: pg-tls-secret
               mountPath: /tls
               readOnly: true
       volumes:
-        - name: tls-secrets
+        - name: pg-tls-secret
           secret:
             secretName: pg-tls-secret
             items:
@@ -39,4 +42,7 @@ spec:
                 path: cert
               - key: ca
                 path: ca
+        - name: password
+          secret:
+            secretName: pg-password
       restartPolicy: Always
