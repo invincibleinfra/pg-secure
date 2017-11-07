@@ -58,7 +58,7 @@ volumes:
 You will need to create the required secrets in a similar manner to the following:
 
 ```
-kubectl create secret generic pg-password password=example-password
+kubectl create secret generic pg-password --from-literal=password=example-password
 kubectl create secret generic pg-tls-secret --from-file=ca=<CA chain file> --from-file=cert=<TLS cert file> --from-file=key=<private key file>
 ```
 
